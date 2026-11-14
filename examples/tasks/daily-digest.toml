@@ -1,0 +1,34 @@
+# Summarise yesterday's new support tickets into a short digest.
+# Try it:  bin/runguard run examples/tasks/daily-digest.toml
+name = "daily-digest"
+description = "Summarise yesterday's new support tickets into a short digest file."
+schedule = "30 7 * * 1-5"                 # 07:30, Monday to Friday
+prompt_file = "prompts/daily-digest.md"   # short on purpose: the steps live below, where they are checked
+
+model = "sonnet"                          # per task
+effort = "low"                            # per task
+timeout_minutes = 10                      # hard limit for the whole run; the process group is killed after it
+max_budget_usd = 0.50
+retries = 1                               # one resume, aimed only at steps that failed their check
+
+permission_mode = "dontAsk"               # anything not listed below is denied, never waited on
+allowed_tools = ["Read", "Write", "Bash(python3 scripts/export_tickets.py:*)"]
+
+[[steps]]
+id = "export"
+do = "Run `python3 scripts/export_tickets.py {run_dir}/tickets.json` to export yesterday's tickets."
+evidence = { file = "{run_dir}/tickets.json", json = true }
+
+[[steps]]
+id = "digest"
+do = "Read {run_dir}/tickets.json and write a digest of at most 12 lines to {run_dir}/digest.md. Start it with the heading '# Daily digest'."
+evidence = { file = "{run_dir}/digest.md", contains = "# Daily digest" }
+
+[[steps]]
+id = "publish"
+do = "Write a copy of the digest to out/digest-{date}.md."
+evidence = { file = "out/digest-{date}.md", contains = "# Daily digest" }
+
+[alert]
+# Runs only when a run does not end "ok". Swap in a Slack webhook, an email command, or osascript.
+command = "echo \"$RUNGUARD_TASK $RUNGUARD_STATUS: $RUNGUARD_REASON\" >> runs/alerts.log"

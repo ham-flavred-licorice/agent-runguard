@@ -1,0 +1,18 @@
+[project]
+name = "agent-runguard"
+version = "0.1.0"
+description = "Run scheduled Claude Code tasks unattended: per-task model and effort, a hard time limit, and an independent check that every step actually happened."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "All rights reserved" }
+dependencies = []
+
+[project.scripts]
+runguard = "runguard.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["runguard"]

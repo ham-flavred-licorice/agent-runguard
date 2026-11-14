@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+runs/
+examples/tasks/runs/
+examples/tasks/out/*
+!examples/tasks/out/.gitkeep
+*.egg-info/

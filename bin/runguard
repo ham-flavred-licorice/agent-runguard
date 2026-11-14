@@ -1,0 +1,4 @@
+#!/bin/sh
+# Launcher: runs the package from this checkout without installing it.
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+PYTHONPATH="$ROOT${PYTHONPATH:+:$PYTHONPATH}" exec "${RUNGUARD_PYTHON:-python3}" -m runguard "$@"

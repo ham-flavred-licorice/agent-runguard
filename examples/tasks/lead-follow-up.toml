@@ -1,0 +1,38 @@
+# Draft follow-ups for leads that have gone quiet, and queue them for a person to send.
+# Shows a check that runs a command instead of looking for a file.
+name = "lead-follow-up"
+description = "Draft follow-up messages for quiet leads and queue them for review."
+schedule = "0 9 * * 1,3,5"                # 09:00 on Monday, Wednesday, Friday
+prompt_file = "prompts/lead-follow-up.md"
+
+model = "opus"                            # writing to customers: use the stronger model here only
+effort = "medium"
+timeout_minutes = 15
+max_budget_usd = 2.00
+retries = 1
+
+permission_mode = "dontAsk"
+allowed_tools = [
+  "Read",
+  "Write",
+  "Bash(python3 scripts/find_quiet_leads.py:*)",
+  "Bash(python3 scripts/queue_drafts.py:*)",
+]
+
+[[steps]]
+id = "find"
+do = "Run `python3 scripts/find_quiet_leads.py {run_dir}/leads.json` to list leads with no reply for 5 days."
+evidence = { file = "{run_dir}/leads.json", json = true }
+
+[[steps]]
+id = "draft"
+do = "For each lead in {run_dir}/leads.json write one follow-up to {run_dir}/drafts/<lead id>.md (under 90 words, plain text, no invented facts)."
+evidence = { glob = "{run_dir}/drafts/*.md", min_count = 1 }
+
+[[steps]]
+id = "queue"
+do = "Run `python3 scripts/queue_drafts.py {run_dir}` to put the drafts in the review queue."
+evidence = { command = "python3 scripts/queue_drafts.py {run_dir} --check" }
+
+[alert]
+command = "echo \"$RUNGUARD_TASK $RUNGUARD_STATUS: $RUNGUARD_REASON\" >> runs/alerts.log"
