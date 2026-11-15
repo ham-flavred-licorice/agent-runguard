@@ -1,5 +1,7 @@
 # agent-runguard
 
+[![checks](https://github.com/ham-flavred-licorice/agent-runguard/actions/workflows/ci.yml/badge.svg)](https://github.com/ham-flavred-licorice/agent-runguard/actions/workflows/ci.yml)
+
 > **Published for review.** You are welcome to read this code. Running it, copying it or building on it needs the author's permission. To have it run on your project, hire the author.
 
 Scheduled Claude Code tasks that either finish every step, or tell you exactly which step did not happen and why.
@@ -138,7 +140,7 @@ Every run leaves a folder: the exact prompt and command line of each attempt, ra
 
 Verified:
 
-- 46 tests pass (standard library `unittest`, no dependencies). They drive the real runner against a scripted stand-in for the CLI and cover: skipped steps, missing reports, stale files, wrong content, resume targeting, the time limit including child processes, overlap locking, denials, crashes, garbage output, older CLIs that lack newer flags, cron parsing, launchd output and the command line.
+- 46 tests pass (standard library `unittest`, no dependencies), on macOS and Linux with Python 3.11 and 3.13, on every push. They drive the real runner against a scripted stand-in for the CLI and cover: skipped steps, missing reports, stale files, wrong content, resume targeting, the time limit including child processes, overlap locking, denials, crashes, garbage output, older CLIs that lack newer flags, cron parsing, launchd output and the command line.
 - The command line the runner builds, and the prompt on standard input, were accepted by the real Claude Code CLI (2.1.325).
 - The runner was run against the real CLI in the build environment, where no login was available. It recorded the CLI's real failure correctly: `ERROR … api_error: Authentication error`. `runguard doctor` read the real `--help` and found every optional flag.
 - One unmodified result object captured from the real CLI is a test fixture. It is an API authentication error that the CLI labels `"subtype": "success"` with `"is_error": true`, which is why the runner checks `is_error`.
